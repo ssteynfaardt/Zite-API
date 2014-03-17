@@ -268,35 +268,3 @@ class Zite extends ApiBase {
 	}
 
 }
-
-?>
-<script>
-
-require('http');
-
-var a = ({
-		request: function(callback) {
-			var options,_options,config, tmp;
-			config = {};
-			options = {
-				host: config.host || 'api.zite.com',
-				port: config.port || 443,
-				path: config.path || '//api/v2/account/login/?appver=2.0&deviceType=android&email=stephan.steynfaardt%40gmail.com&password=Qu!cK8r0wN',
-				method: config.method || 'POST'
-			};
-			tmp = [];
-			return http.request(_options, function(res) {
-				res.setEncoding('utf8');
-				res.on('data', function(chunk) {
-					return tmp.push(chunk);
-				});
-				return res.on('end', function(e) {
-					var body;
-					body = tmp.join('');
-					return console.log(body);
-				});
-			}).end();
-		}
-	});
-a.request();
-</script>
