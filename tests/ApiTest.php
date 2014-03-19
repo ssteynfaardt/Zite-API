@@ -116,6 +116,15 @@ class ZiteTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * @depends testTopStories
+	 */
+	public function testArticleMarkAsRead(){
+		$topStories = $this->zite->getTopStories();
+		$this->zite->markAsRead($topStories->documents[0]->url);
+		$this->assertFalse($this->zite->error);
+	}
+
+	/**
 	 * @depends testValidLogin
 	 */
 	public function testArticleLike()

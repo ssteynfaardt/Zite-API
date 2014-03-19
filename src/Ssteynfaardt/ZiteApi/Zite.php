@@ -218,6 +218,53 @@ class Zite extends ApiBase {
 	}
 
 	/**
+	 * View an article in the Zite reader
+	 * @param $url Url to view in the reader
+	 * @return mixed HTML containing the article
+	 * @throws ZiteException
+	 */
+	public function viewArticleReader($url){
+		if(empty($url)){
+			throw new ZiteException('$url can not be empty');
+		}
+		$initialFontSize = 0;
+		$this->setUrl('news/reader',compact('url','initialFontSize'));
+		$this->setExpectedResponse(200);
+		return $this->call();
+	}
+
+	/**
+	 * Mark an article as read
+	 * @param string $url URL to the article
+	 * @param string $section Section where the URL article was viewed in
+	 * @return mixed Empty JSON Object
+	 * @throws ZiteException
+	 */
+	public function markAsRead($url,$section = 'topstories'){
+		if(empty($url)){
+			throw new ZiteException('$url can not be empty');
+		}
+
+		if(empty($section)){
+			throw new ZiteException('$section can not be empty');
+		}
+
+		$param = array(
+			'event' => 'ArticleView',
+			'orientation' => 'portrait',
+			'source' => 'section',
+			'section' => $section,
+			'url' => $url,
+			'webmode' => false,
+		);
+
+		$this->setUrl('log/event',$param);
+		$this->setMethod('post');
+		$this->setExpectedResponse(204);
+		return $this->call();
+	}
+
+	/**
 	 * Like an article
 	 * @param string $url URL of the article
 	 * @return mixed Empty JSON object
@@ -252,6 +299,12 @@ class Zite extends ApiBase {
 		$this->setMethod('post');
 		return $this->call();
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Private / Internal methods
+	|--------------------------------------------------------------------------
+	*/
 
 	/**
 	 * Determines if an output returned needs to be a JSON string or Object

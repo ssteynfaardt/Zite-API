@@ -5,13 +5,18 @@ namespace Ssteynfaardt\ZiteApi;
 class ApiBase {
 	public      $accessToken = null;
 	public      $userId = null;
+	public      $httpCode = null;
+	public      $error = false;
+
 	protected   $throwExceptionOnError = true;
 	private     $serverUrl = 'https://api.zite.com/api';
 	private     $apiVersion = 'v2';
 	private     $appVersion = '2.0';
 	private     $deviceType = 'ipad';
+	private     $expectedResponseCode = null;
 	private     $validMethods = array('GET','POST');
 	private     $url = null;
+
 	const       ZITE_URL_LOGIN = 'account/login';
 	const       ZITE_URL_CREATE = 'account/create';
 
@@ -57,6 +62,20 @@ class ApiBase {
 	}
 
 	/**
+	 * Set the response code you expect from the server
+	 * @param $responseCode
+	 */
+	protected function setExpectedResponse($responseCode){
+		if(is_int($responseCode)){
+			$this->expectedResponseCode = (int) $responseCode;
+			return true;
+		}
+		else{
+			throw new ZiteException('$responseCode must be an integer');
+		}
+	}
+
+	/**
 	 * Performs the CURL request
 	 * @return mixed Result from the CURL request
 	 * @throws ZiteException
@@ -88,7 +107,17 @@ class ApiBase {
 			$jsonData->error = "No data received from from server ({$this->httpCode})";
 		}
 
-		if($this->inHttpRange($this->httpCode,200)){
+
+		if($this->expectedResponseCode !== null && $this->httpCode !== $this->expectedResponseCode){
+			$this->error = true;
+			$this->errorMsg = "Expected {$this->expectedResponseCode} response code, but {$this->httpCode} returned.";
+			error_log($this->errorMsg);
+			$this->expectedResponseCode = null;
+			if($this->throwExceptionOnError === true){
+				throw new ZiteException($this->errorMsg);
+			}
+		}
+		elseif($this->error !== true && $this->inHttpRange($this->httpCode,200)){
 			$this->error = false;
 			$this->errorMsg = null;
 		}
@@ -100,6 +129,8 @@ class ApiBase {
 				throw new ZiteException($jsonData->error,$this->httpCode);
 			}
 		}
+		//Set the expected response back to null
+		$this->expectedResponseCode = null;
 
 		return $returnData;
 
