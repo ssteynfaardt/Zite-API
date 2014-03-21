@@ -92,6 +92,28 @@ class Zite extends ApiBase {
 		return $response;
 	}
 
+	/**
+	 * Send a forgot password email.
+	 * @param string $email email account used to sign into zite
+	 * @return mixed
+	 */
+	public function forgotPassword($email){
+		$this->setUrl('account/reset',compact('email'));
+		$this->setMethod('post');
+		return $this->call();
+	}
+
+	/**
+	 * Set popular articles preferences
+	 * @param int $module_populararticles 1 enable, 0 disable
+	 * @return mixed
+	 */
+	public function setPreferences($module_populararticles){
+		$this->setUrl('account/setprefs',compact('module_populararticles'));
+		$this->setMethod('post');
+		return $this->call();
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Bookmarks
@@ -129,6 +151,37 @@ class Zite extends ApiBase {
 	public function removeBookmark($topic){
 		$this->setUrl('topics/bookmarks/remove', compact('topic'));
 		$this->setMethod('post');
+		return $this->call();
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Profile
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Get your user profile
+	 * @return mixed JSON Object containing user profile
+	 */
+	public function getProfile(){
+		$this->setUrl('profiles/get');
+		return $this->call();
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| History
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Fetch a history of articles viewed
+	 * @param int $limit Amount to fetch
+	 * @return mixed JSON Object containing user profile
+	 */
+	public function getHistory($limit = 150){
+		$this->setUrl('history/list/articles',compact('limit'));
 		return $this->call();
 	}
 

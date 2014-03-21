@@ -150,4 +150,25 @@ class ZiteTest extends PHPUnit_Framework_TestCase
 		$this->zite->removeArticleLike('http://www.zite.com/');
 		$this->assertFalse($this->zite->error);
 	}
+
+	public function testSetPreferences()
+	{
+		$this->zite->setPreferences(1);
+		$this->assertFalse($this->zite->error);
+	}
+
+	public function testGetProfile()
+	{
+		$profile = $this->zite->getProfile();
+		$this->assertObjectHasAttribute('profile', $profile, "profile not found");
+		$this->assertFalse($this->zite->error);
+	}
+
+	public function testHistory(){
+		$history = $this->zite->getHistory();
+		$this->assertObjectHasAttribute('allrecent', $history, "allrecent not found");
+		$this->assertFalse($this->zite->error);
+	}
+
+
 }
